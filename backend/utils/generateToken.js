@@ -6,9 +6,9 @@ const generateToken = (userId, res) => {
     });
 
     res.cookie("jwt", token, {
-        maxAge: 15 * 24 * 60 * 1000,
+        maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true, //xss attacks
-        sameSite: "strict", //CSRF attacks
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //CSRF attacks
         secure: process.env.NODE_ENV === "production",
     });
 }
