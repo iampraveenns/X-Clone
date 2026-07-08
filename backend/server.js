@@ -20,10 +20,6 @@ const __dirname = path.dirname(__filename);
 // Loading environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-console.log("Loaded .env from:", path.resolve(__dirname, '.env'));
-console.log("PORT:", process.env.PORT);
-console.log("MONGO_URL:", process.env.MONGO_URL);
-
 // Initializing Express
 const app = express();
 const PORT = process.env.PORT;
@@ -36,7 +32,7 @@ cloudinary.config({
 });
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", ""],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -52,12 +48,12 @@ app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/notifications', notificationRoute);
 
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "frontend", "build")));
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
-    });
-}
+// if (process.env.NODE_ENV === "production") {
+//     app.use(express.static(path.join(__dirname, "frontend", "build")));
+//     app.get("*", (req, res) => {
+//         res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+//     });
+// }
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
