@@ -7,41 +7,12 @@ import RightPanel from './components/common/RightPanel'
 import NotificationPage from './pages/notification/NotificationPage'
 import ProfilePage from './pages/profile/ProfilePage'
 import { Toaster } from 'react-hot-toast'
-import { useQuery } from '@tanstack/react-query'
-import { baseUrl } from './constant/url'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import useAuthUser from './hooks/useAuthUser';
 
 const App = () => {
 
-  const { data: authUser, isLoading } = useAuthUser({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      try {
-        const res = await fetch(`${baseUrl}/api/auth/me`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-
-        const data = await res.json();
-        if (data.error) {
-          return null
-        }
-
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-
-        return data;
-      } catch (error) {
-        throw error
-      }
-    },
-    retry: false
-  })
+  const { data: authUser, isLoading } = useAuthUser();
 
   if (isLoading) {
     return (
