@@ -22,8 +22,7 @@ export const signup = async (req, res) => {
             return res.status(400).json({ error: "Password must be atleast 6 characters length" });
         }
 
-        //hashing the password (encrypting)
-
+        // hashing the password (encrypting)
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -42,7 +41,6 @@ export const signup = async (req, res) => {
                 username: newUser.username,
                 fullname: newUser.fullname,
                 email: newUser.email,
-                password: newUser.password,
                 createdAt: newUser.createdAt,
                 updatedAt: newUser.updatedAt,
                 followers: newUser.followers,
@@ -52,25 +50,30 @@ export const signup = async (req, res) => {
                 bio: newUser.bio,
                 link: newUser.link
             });
-        }
-        else {
-            res.status(400).json({ message: "User Creation Failed" });
+        } else {
+            res.status(400).json({ error: "User Creation Failed" });
         }
 
     } catch (error) {
         console.error(`Error in SignUp: ${error.message}`);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ username });
-        const isPasswordValid = await bcrypt.compare(password, user.password || "");
 
-        if (!user || !isPasswordValid) {
-            return res.status(404).json({ error: "Invalid Username or Password" });
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(400).json({ error: "Invalid Username or Password" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: "Invalid Username or Password" });
         }
 
         generateToken(user._id, res);
@@ -80,7 +83,6 @@ export const login = async (req, res) => {
             username: user.username,
             fullname: user.fullname,
             email: user.email,
-            password: user.password,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             followers: user.followers,
@@ -92,25 +94,31 @@ export const login = async (req, res) => {
         })
     } catch (error) {
         console.error(`Error in Login: ${error.message}`);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 export const logout = (req, res) => {
-    try{
-        res.cookie("jwt", "", { maxAge: 0});
-        res.status(200).json({message: "Logged out successfully"});     
+    try {
+        res.cookie("jwt", "", {
+            maxAge: 0,
+            httpOnly: true,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production",
+        });
+        res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
         console.error(`Error in Logout: ${error.message}`);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
 export const getme = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user._id }).select("-password");
         res.status(200).json(user);
     } catch (error) {
         console.error(`Error in GetMe: ${error.message}`);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
