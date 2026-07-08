@@ -32,11 +32,11 @@ cloudinary.config({
 });
 
 app.use(cors({
-    origin: ["http://localhost:3000", "https://your-netlify-url.netlify.app"],
+    origin: ["http://localhost:3000"],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+}))
 
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
