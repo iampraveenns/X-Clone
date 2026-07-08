@@ -2,49 +2,49 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cloudinary from 'cloudinary';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
 
 // Importing routes
 import authRoute from './routes/auth.route.js';
 import userRoute from './routes/user.route.js';
 import connectDB from './db/connectDB.js';
 import postRoute from './routes/post.route.js';
-import notificationRoute from './routes/notification.route.js'
-import cors from "cors"
-import path from "path"
+import notificationRoute from './routes/notification.route.js';
+
+// Resolve __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Loading environment variables
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+console.log("Loaded .env from:", path.resolve(__dirname, '.env'));
+console.log("PORT:", process.env.PORT);
+console.log("MONGO_URL:", process.env.MONGO_URL);
 
 // Initializing Express
 const app = express();
-const PORT = process.env.PORT
-
-const __dirname = path.resolve();
+const PORT = process.env.PORT;
 
 // Configuring Cloudinary
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET_KEY
-})
+});
 
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}))
+}));
 
-app.use(express.json(
-    {
-        limit: "5mb"
-    }
-));
-
+app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
-app.use(express.urlencoded({
-    extended: true
-}))
+app.use(express.urlencoded({ extended: true }));
 
 // Setting up routes
 app.use('/api/auth', authRoute);
@@ -62,4 +62,4 @@ if (process.env.NODE_ENV === "production") {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
-})
+});
