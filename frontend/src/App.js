@@ -10,10 +10,11 @@ import { Toaster } from 'react-hot-toast'
 import { useQuery } from '@tanstack/react-query'
 import { baseUrl } from './constant/url'
 import LoadingSpinner from './components/common/LoadingSpinner'
+import useAuthUser from './hooks/useAuthUser';
 
 const App = () => {
 
-  const { data: authUser, isLoading } = useQuery({
+  const { data: authUser, isLoading } = useAuthUser({
     queryKey: ["authUser"],
     queryFn: async () => {
       try {

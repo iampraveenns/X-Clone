@@ -1,5 +1,6 @@
 import XSvg from "../svgs/x";
 
+import useAuthUser from '../../hooks/useAuthUser';
 import { MdHomeFilled } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
@@ -11,6 +12,7 @@ import toast from "react-hot-toast"
 
 const Sidebar = () => {
 	const queryClient = useQueryClient();
+  const { data: authUser } = useAuthUser();
 	const { mutate: logout } = useMutation({
 		mutationFn: async () => {
 			try {
