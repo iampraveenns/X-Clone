@@ -1,18 +1,19 @@
 import XSvg from "../svgs/x";
 
-import useAuthUser from '../../hooks/useAuthUser';
 import { MdHomeFilled } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { baseUrl } from "../../constant/url"
 import toast from "react-hot-toast"
+import useAuthUser from "../../hooks/useAuthUser";
 
 const Sidebar = () => {
 	const queryClient = useQueryClient();
-  const { data: authUser } = useAuthUser();
+	const { data: authUser } = useAuthUser();
+
 	const { mutate: logout } = useMutation({
 		mutationFn: async () => {
 			try {
@@ -43,23 +44,6 @@ const Sidebar = () => {
 		onError: () => {
 			toast.error("Logout Unsuccessfull");
 		}
-	})
-
-	const fetchAuthUser = async () => {
-		const res = await fetch(`${baseUrl}/api/auth/me`, {
-			credentials: "include",
-		});
-
-		if (!res.ok) {
-			throw new Error("Failed to fetch auth user");
-		}
-
-		return res.json();
-	};
-
-	const { data: authUser } = useQuery({ 
-		queryKey: ["authUser"],
-		queryFn: fetchAuthUser, 
 	})
 
 	return (
